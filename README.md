@@ -29,37 +29,37 @@ Zero dependencies (stdlib `net/http` + `crypto/hmac`). Go 1.21+.
 package main
 
 import (
-    "context"
-    "log"
-    "os"
+ "context"
+ "log"
+ "os"
 
-    "github.com/hartemyaakoub/liqaa-go"
+ "github.com/hartemyaakoub/liqaa-go"
 )
 
 func main() {
-    client := liqaa.New(os.Getenv("LIQAA_PK"), os.Getenv("LIQAA_SK"))
-    ctx := context.Background()
+ client := liqaa.New(os.Getenv("LIQAA_PK"), os.Getenv("LIQAA_SK"))
+ ctx := context.Background()
 
-    // 1) Identity → 1-hour browser-safe JWT
-    tok, err := client.ExchangeSDKToken(ctx, liqaa.Identity{
-        Email: "user@example.com",
-        Name:  "Anonymous Visitor",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("sdk_token:", tok.SDKToken)
+ // 1) Identity → 1-hour browser-safe JWT
+ tok, err := client.ExchangeSDKToken(ctx, liqaa.Identity{
+ Email: "user@example.com",
+ Name: "Anonymous Visitor",
+ })
+ if err != nil {
+ log.Fatal(err)
+ }
+ log.Println("sdk_token:", tok.SDKToken)
 
-    // 2) Create persistent room
-    conv, err := client.CreateConversation(ctx, liqaa.ConversationCreate{
-        CallerEmail:            "agent@yoursite.com",
-        CalleeEmail:            "customer@example.com",
-        ExternalConversationID: "ticket-42",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.Println("join_url:", conv.JoinURL)
+ // 2) Create persistent room
+ conv, err := client.CreateConversation(ctx, liqaa.ConversationCreate{
+ CallerEmail: "agent@yoursite.com",
+ CalleeEmail: "customer@example.com",
+ ExternalConversationID: "ticket-42",
+ })
+ if err != nil {
+ log.Fatal(err)
+ }
+ log.Println("join_url:", conv.JoinURL)
 }
 ```
 
@@ -71,13 +71,13 @@ import "github.com/hartemyaakoub/liqaa-go"
 verifier := liqaa.NewWebhookVerifier(os.Getenv("LIQAA_WEBHOOK_SECRET"))
 
 http.HandleFunc("/webhooks/liqaa", func(w http.ResponseWriter, r *http.Request) {
-    body, _ := io.ReadAll(r.Body)
-    if !verifier.Verify(body, r.Header.Get("X-LIQAA-Signature")) {
-        http.Error(w, "invalid signature", http.StatusUnauthorized)
-        return
-    }
-    // event verified — handle here
-    w.WriteHeader(http.StatusNoContent)
+ body, _ := io.ReadAll(r.Body)
+ if !verifier.Verify(body, r.Header.Get("X-LIQAA-Signature")) {
+ http.Error(w, "invalid signature", http.StatusUnauthorized)
+ return
+ }
+ // event verified — handle here
+ w.WriteHeader(http.StatusNoContent)
 })
 ```
 
